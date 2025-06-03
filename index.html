@@ -1,1 +1,112 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Mouse DPI Analyzer</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      padding: 2rem;
+      background: #f7f9fc;
+    }
 
+    h1 {
+      text-align: center;
+      color: #333;
+    }
+
+    #dpi-form {
+      margin-bottom: 20px;
+      text-align: center;
+    }
+
+    #dpi-form input, #dpi-form select {
+      padding: 0.5rem;
+      font-size: 1rem;
+      margin: 0 5px;
+    }
+
+    #track-area {
+      border: 2px dashed #ccc;
+      height: 300px;
+      position: relative;
+      margin: 2rem auto;
+      width: 90%;
+      max-width: 800px;
+      background-color: white;
+    }
+
+    #start-point {
+      width: 10px;
+      height: 10px;
+      background-color: red;
+      border-radius: 50%;
+      position: absolute;
+      top: 145px;
+      left: 0;
+    }
+
+    #info {
+      text-align: center;
+      margin-top: 1rem;
+      font-size: 1.2rem;
+    }
+  </style>
+</head>
+<body>
+
+  <h1>Mouse DPI Analyzer</h1>
+
+  <div id="dpi-form">
+    <label for="dpi">Your current DPI:</label>
+    <input type="number" id="dpi" placeholder="e.g., 800">
+    
+    <label for="inches">Distance moved (in inches):</label>
+    <input type="number" id="inches" placeholder="e.g., 1" step="0.01">
+  </div>
+
+  <div id="track-area">
+    <div id="start-point"></div>
+  </div>
+
+  <div id="info">Move your mouse from the red dot in a straight line →</div>
+
+  <script>
+    let startX = null;
+    let endX = null;
+    const trackArea = document.getElementById('track-area');
+    const info = document.getElementById('info');
+
+    trackArea.addEventListener('mousedown', (e) => {
+      startX = e.clientX;
+      info.textContent = 'Now drag and release the mouse to the right.';
+    });
+
+    trackArea.addEventListener('mouseup', (e) => {
+      endX = e.clientX;
+      if (startX !== null) {
+        const distancePixels = Math.abs(endX - startX);
+        const inches = parseFloat(document.getElementById('inches').value);
+        const dpi = parseFloat(document.getElementById('dpi').value);
+
+        let result = `You moved ${distancePixels} pixels.`;
+
+        if (inches && !isNaN(inches)) {
+          const calculatedDPI = distancePixels / inches;
+          result += ` Estimated DPI: ${calculatedDPI.toFixed(2)}`;
+        }
+
+        if (dpi && inches && !isNaN(dpi) && !isNaN(inches)) {
+          const expectedPixels = dpi * inches;
+          result += ` | Expected Pixels: ${expectedPixels.toFixed(2)}`;
+        }
+
+        info.textContent = result;
+        startX = null;
+        endX = null;
+      }
+    });
+  </script>
+
+</body>
+</html>
